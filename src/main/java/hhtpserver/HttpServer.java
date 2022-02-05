@@ -2,47 +2,30 @@ package hhtpserver;
 
 import hhtpserver.config.Configuration;
 import hhtpserver.config.ConfigurationManager;
+import hhtpserver.core.ServerListenerThread;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class HttpServer {
+    private final static Logger LOGGER = LoggerFactory.getLogger(HttpServer.class);
+
     public static void main(String[] args) throws IOException {
-        System.out.println("Server starting...");
+        LOGGER.info("Server starting...");
+
         ConfigurationManager.getInstance().loadConfigurationFile("src/main/resources/http.json");
         Configuration conf = ConfigurationManager.getInstance().getConfiguration();
 
-        System.out.println("port : " + conf.getPort());
-        System.out.println("webroot : " + conf.getWebroot());
+        ServerListenerThread serverListenerThread = new ServerListenerThread(conf.getPort(),conf.getWebroot());
+        serverListenerThread.start();
 
-        try {
-            ServerSocket serverSocket = new ServerSocket(conf.getPort());
-            Socket socket = serverSocket.accept();
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
-
-            // TODO we would read
-
-            // TODO we would write
-            String html = "<html><head><title>Simple Java HTTP Server</title></head><body><h1>This page was created by naldo testing a Java server</h1></body></html>";
-            final String CRFL = "\n\r";
-            String response =
-                    "HTTP/1.1 200 OK" + CRFL + // Status Line
-                    "Content-Length" + html.getBytes().length + CRFL + // HEADER
-                    CRFL +
-                    html +
-                    CRFL + CRFL;
-
-            outputStream.write(response.getBytes());
-
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-            serverSocket.close();
-        }catch(IOException e){e.printStackTrace();}
     }
 }
