@@ -1,7 +1,7 @@
-package hhtpserver.config;
+package httpserver.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import hhtpserver.util.Json;
+import httpserver.util.Json;
 
 import java.io.FileReader;
 import java.io.IOException;
